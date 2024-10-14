@@ -55,7 +55,7 @@ if (isset($_POST['Submit'])) {
 //     }
 //     $stmt->close();
 //     $conn->close();
-}
+// }
 ?>
 
 <!DOCTYPE html>

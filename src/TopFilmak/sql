@@ -1,0 +1,49 @@
+-- Adminer 4.8.1 MySQL 5.5.5-10.9.8-MariaDB-1:10.9.8+maria~ubu2204 dump
+
+SET NAMES utf8;
+SET time_zone = '+00:00';
+SET foreign_key_checks = 0;
+SET sql_mode = 'NO_AUTO_VALUE_ON_ZERO';
+
+SET NAMES utf8mb4;
+
+DROP TABLE IF EXISTS `filmak`;
+CREATE TABLE `filmak` (
+  `isan` int(11) NOT NULL,
+  `izena` char(1) NOT NULL,
+  `urtea` date NOT NULL,
+  PRIMARY KEY (`isan`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+DROP TABLE IF EXISTS `puntuazioak`;
+CREATE TABLE `puntuazioak` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `puntuazioa` int(11) NOT NULL,
+  `user` int(11) NOT NULL,
+  `film` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `user` (`user`),
+  KEY `film` (`film`),
+  CONSTRAINT `puntuazioak_ibfk_1` FOREIGN KEY (`user`) REFERENCES `user` (`id`),
+  CONSTRAINT `puntuazioak_ibfk_2` FOREIGN KEY (`film`) REFERENCES `filmak` (`isan`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+DROP TABLE IF EXISTS `user`;
+CREATE TABLE `user` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `username` char(50) NOT NULL,
+  `password` char(100) NOT NULL,
+  `image_path` char(100) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+INSERT INTO `user` (`id`, `username`, `password`, `image_path`) VALUES
+(1,	'oihan',	'$2y$10$ZFfW7bI7WReddR0HiNGm8u7faGPx/hSUa17CsvZ2E5SzeFxA7Va7G',	''),
+(2,	'oihana',	'$2y$10$KkbZBHAYI8K1RjdJVejWTOZwQ8LJ8xtBcnnnUlRX8s65oyXOoAXcO',	''),
+(4,	'oihane',	'$2y$10$nQHQfzI7hKxzvkOUhTt8QOr5L2cLeq/.VOmlC97YN9Dce5873ETgu',	NULL),
+(5,	'oihanq',	'$2y$10$JNl2YSUMLY/RBq7M5DuynOTG4Jj2j2mQgU1NPQPQML4m3cDlNZ5qG',	'images/Izengabea.jpeg'),
+(6,	'oihanz',	'$2y$10$kFf489lGgTbQNuxXyheD3.vWHUq23hK6CnsVbQt4M/b1ENzxryBLW',	'images/Izengabea.jpeg');
+
+-- 2024-10-14 10:52:23

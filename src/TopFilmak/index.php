@@ -1,4 +1,5 @@
 <?php
+session_start();
 
 ?>
 <!DOCTYPE html>
@@ -9,6 +10,7 @@
     <title>Top filmak</title>
 </head>
 <body>
+    <h1><?php echo $_SESSION['UserData']['Username']?></h1>
     <h3 id="filmIzena"></h3>
     <h3 id="filmPunt"></h3>
     <h3 id="filmInf"></h3>
