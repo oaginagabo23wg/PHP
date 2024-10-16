@@ -1,4 +1,6 @@
 <?php
+require './db.php';
+
 session_start();
 $izena = '';
 $izenErr = '';
@@ -7,21 +9,38 @@ $isanErr = '';
 $urtea = '';
 $urteaErr = '';
 $puntuazioa = '';
+$films = $database->getAllFilms();
+$filmakZerrenda = '';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $izena = trim($_POST['izena']);
-
+    $isan = trim($_POST['isan']);
+    $urtea = trim($_POST['urtea']);
+    $puntuazioa = $_POST['puntu'];
     if (empty($izena)) {
         $izenErr = 'Mesedez, idatzi izena.';
-    } 
-    elseif($izena === ){
-
     }
-    else {
-        // Aquí podrías continuar procesando el formulario (guardar en base de datos, etc.)
-        // Por ejemplo, redirigir a otra página
-        // header("Location: success.php");
-        // exit();
+    if (empty($urtea)) {
+        $urteaErr = 'Mesedez, idatzi urtea.';
+    } elseif (!is_numeric($urtea) || $urtea < 1900 || $urtea > date("Y")) {
+        $urteaErr = 'Urtea baliozko bat izan behar da.';
+    }
+    if (empty($izenErr) && empty($isanErr) && empty($urteaErr)) {
+        $foundFilm = false;
+        if (empty($isan)) {
+            $filmakZerrenda .= '<br><h1>Filmak</h1><tr><th>Izena</th><th>Isan</th><th>Urtea</th></tr>';
+            for ($i = 0; $i < count($films); $i++) {
+                if ($izena == $films[$i]->izena) {
+                    $foundFilm = true;
+                    $filmakZerrenda .= '<tr><td>' . htmlspecialchars($films[$i]->izena) . '</td><td>' . htmlspecialchars($films[$i]->isan) . '</td><td>' . htmlspecialchars($films[$i]->urtea) . '</td></tr>';
+                }
+            }
+            if (!$foundFilm) {
+                $izenErr = 'Ez da izen hori duen filmik aurkitu.';
+            }
+        } else {
+            $database->insertFilm($izena, $isan, $urtea);
+        }
     }
 }
 ?>
@@ -35,7 +54,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </head>
 
 <body>
-<form method="post" action="">
+    <form method="post" action="">
         <label>Izena</label>
         <input type="text" name="izena" value="<?php echo htmlspecialchars($izena); ?>">
         <div id="izenErr" style="color: red;"><?php echo $izenErr; ?></div>
@@ -58,6 +77,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </select><br>
         <input type="submit" value="Bidali">
     </form>
+    <table>
+        <?php echo $filmakZerrenda; ?>
+    </table>
 </body>
 
 </html>

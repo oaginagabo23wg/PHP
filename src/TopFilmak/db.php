@@ -1,25 +1,30 @@
 <?php
 require './user.php';
 require './film.php';
-class Database {
+class Database
+{
     private $conn;
 
-    public function __construct($servername, $username, $password, $dbName) {
+    public function __construct($servername, $username, $password, $dbName)
+    {
         $this->conn = new mysqli($servername, $username, $password, $dbName);
         if ($this->conn->connect_error) {
             die("Error connecting to database: " . $this->conn->connect_error);
         }
     }
 
-    public function getConnection() {
+    public function getConnection()
+    {
         return $this->conn;
     }
 
-    public function close() {
+    public function close()
+    {
         $this->conn->close();
     }
 
-    public function checkIfExists($table, $column, $value) {
+    public function checkIfExists($table, $column, $value)
+    {
         $stmt = $this->conn->prepare("SELECT COUNT(*) FROM $table WHERE $column = ?");
         $stmt->bind_param("s", $value);
         $stmt->execute();
@@ -30,18 +35,30 @@ class Database {
         return $count > 0;
     }
 
-    public function getAllFilms() {
+    public function getAllFilms()
+    {
         $films = [];
-        $stmt = $this->conn->prepare("SELECT izena, isan, urtea, puntuazioa FROM films"); // Cambia "films" por el nombre de tu tabla
+        $stmt = $this->conn->prepare("SELECT izena, isan, urtea FROM filmak");
         $stmt->execute();
-        $stmt->bind_result($izena, $isan, $urtea, $puntuazioa);
+        $stmt->bind_result($izena, $isan, $urtea);
 
         while ($stmt->fetch()) {
-            $films[] = new Film($izena, $isan, $urtea, $puntuazioa);
+            $films[] = new Film($izena, $isan, $urtea);
         }
-
         $stmt->close();
         return $films;
+    }
+    public function insertFilm($izena, $isan, $urtea)
+    {
+        $sql = "INSERT INTO filmak (izena, isan, urtea) VALUES (?, ?, ?)";
+        $stmt = $this->conn->prepare($sql);
+        if ($stmt === false) {
+            return false;
+        }
+        $stmt->bind_param('sii', $izena, $isan, $urtea);
+        $result = $stmt->execute();
+        $stmt->close();
+        return $result;
     }
 }
 
