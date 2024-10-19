@@ -7,9 +7,11 @@ if (isset($_POST['Submit'])) {
 
     $Username = $_POST['Username'] ?? '';
     $Password = $_POST['Password'] ?? '';
+    // username: oihan 
+    // password: oihan
+    $user = new User($database);
 
     if ($user->login($Username, $Password)) {
-        $_SESSION['UserData']['Username'] = $Username;
         header("location:form.php");
         exit;
     } else {

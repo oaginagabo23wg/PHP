@@ -10,8 +10,8 @@ SET NAMES utf8mb4;
 DROP TABLE IF EXISTS `filmak`;
 CREATE TABLE `filmak` (
   `isan` int(11) NOT NULL,
-  `izena` char(1) NOT NULL,
-  `urtea` date NOT NULL,
+  `izena` varchar(50) NOT NULL,
+  `urtea` int(4) NOT NULL,
   PRIMARY KEY (`isan`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -46,4 +46,4 @@ INSERT INTO `user` (`id`, `username`, `password`, `image_path`) VALUES
 (5,	'oihanq',	'$2y$10$JNl2YSUMLY/RBq7M5DuynOTG4Jj2j2mQgU1NPQPQML4m3cDlNZ5qG',	'images/Izengabea.jpeg'),
 (6,	'oihanz',	'$2y$10$kFf489lGgTbQNuxXyheD3.vWHUq23hK6CnsVbQt4M/b1ENzxryBLW',	'images/Izengabea.jpeg');
 
--- 2024-10-14 10:52:23
+-- 2024-10-19 15:19:44

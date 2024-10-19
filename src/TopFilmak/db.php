@@ -60,6 +60,42 @@ class Database
         $stmt->close();
         return $result;
     }
+    public function updateFilm($izena, $urtea, $isan){
+        $sql = "UPDATE filmak SET izena = ?, urtea = ? WHERE isan = ?";
+        $stmt = $this->conn->prepare($sql);
+        if ($stmt === false) {
+            return false;
+        }
+        $stmt->bind_param('ssi', $izena, $urtea, $isan); 
+        $result = $stmt->execute();
+        $stmt->close();
+        return $result;
+    }
+    public function deleteFilm($isan){
+        $stmt = $this->conn->prepare("DELETE FROM filmak WHERE isan = ?");
+        $stmt->bind_param("s", $isan);
+        $stmt->execute();
+        $stmt->close();
+    }
+    public function puntuatuFilm($puntuazioa, $isan, $erab){
+        $stmt = $this->conn->prepare("INSERT INTO puntuazioak (puntuazioa, user, film) VALUES (?, ?, ?);");
+        if ($stmt === false) {
+            return false;
+        }
+        $stmt->bind_param('iii', $puntuazioa, $erab, $isan);
+        $result = $stmt->execute();
+        $stmt->close();
+        return $result;
+    }
+    public function getPuntuakFilm($id) {
+        $stmt = $this->conn->prepare("SELECT p.puntuazioa, f.izena FROM puntuazioak p JOIN filmak f ON p.film = f.isan WHERE p.user = ?");
+        $stmt->bind_param('i', $id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $stmt->close();
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+    
 }
 
 $database = new Database("db", "root", "root", "mydatabase");
