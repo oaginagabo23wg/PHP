@@ -7,7 +7,7 @@ class User {
     }
 
     public function login($username, $password) {
-        $stmt = $this->db->prepare('SELECT password FROM user WHERE username = ?');
+        $stmt = $this->db->prepare('SELECT id, password FROM user WHERE username = ?');
         $stmt->bind_param('s', $username);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -16,6 +16,10 @@ class User {
             $row = $result->fetch_assoc();
             $hashed_password = $row['password'];
             if (password_verify($password, $hashed_password)) {
+                $_SESSION['UserData'] =[
+                    'Username' => $username,
+                    'id' => $row['id']
+                ];
                 return true;
             }
         }

@@ -2,6 +2,12 @@
 require './db.php';
 
 session_start();
+
+if (!isset($_SESSION['UserData'])) {
+    header("Location: login.php"); 
+    exit; 
+}
+
 $izena = '';
 $izenErr = '';
 $isan = '';
@@ -17,33 +23,58 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $isan = trim($_POST['isan']);
     $urtea = trim($_POST['urtea']);
     $puntuazioa = $_POST['puntu'];
-    if (empty($izena)) {
-        $izenErr = 'Mesedez, idatzi izena.';
-    }
-    if (empty($urtea)) {
-        $urteaErr = 'Mesedez, idatzi urtea.';
-    } elseif (!is_numeric($urtea) || $urtea < 1900 || $urtea > date("Y")) {
+
+    if (!empty($urtea) && (!is_numeric($urtea) || $urtea < 1900 || $urtea > date("Y"))) {
         $urteaErr = 'Urtea baliozko bat izan behar da.';
     }
-    if (empty($izenErr) && empty($isanErr) && empty($urteaErr)) {
-        $foundFilm = false;
-        if (empty($isan)) {
+
+    if (empty($urteaErr)) {
+        if (empty($izena) && empty($isan)) {
+            $izenErr = 'Mesedez, idatzi izena edo ISAN bat.';
+
+        } elseif (empty($izena) && !empty($isan)) {
+            foreach ($films as $film) {
+                if ($isan == $film->isan) {
+                        $database->deleteFilm($isan);
+                    break;
+                }
+            }
+
+        } elseif (!empty($izena) && empty($isan)) {
             $filmakZerrenda .= '<br><h1>Filmak</h1><tr><th>Izena</th><th>Isan</th><th>Urtea</th></tr>';
-            for ($i = 0; $i < count($films); $i++) {
-                if ($izena == $films[$i]->izena) {
+            $foundFilm = false;
+            foreach ($films as $film) {
+                if ($izena == $film->izena) {
                     $foundFilm = true;
-                    $filmakZerrenda .= '<tr><td>' . htmlspecialchars($films[$i]->izena) . '</td><td>' . htmlspecialchars($films[$i]->isan) . '</td><td>' . htmlspecialchars($films[$i]->urtea) . '</td></tr>';
+                    $filmakZerrenda .= '<tr><td>' . htmlspecialchars($film->izena) . '</td><td>' . htmlspecialchars($film->isan) . '</td><td>' . htmlspecialchars($film->urtea) . '</td></tr>';
                 }
             }
             if (!$foundFilm) {
-                $izenErr = 'Ez da izen hori duen filmik aurkitu.';
+                $database->insertFilm($izena, $isan, $urtea);
             }
+
         } else {
-            $database->insertFilm($izena, $isan, $urtea);
+            $foundFilm = false;
+            foreach ($films as $film) {
+                if ($isan == $film->isan) {
+                    if ($izena != $film->izena || $urtea != $film->urtea) {
+                        $database->updateFilm($izena, $urtea, $isan);
+                    }
+                    $foundFilm = true;
+                    break;
+                }
+            }
+            if (!$foundFilm) {
+                $database->insertFilm($izena, $isan, $urtea);
+            } else {
+                $database->puntuatuFilm($puntuazioa, $isan, $_SESSION['UserData']['id']);
+                header('location:index.php');
+            }
         }
     }
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
